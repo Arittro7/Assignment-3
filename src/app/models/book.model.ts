@@ -28,7 +28,7 @@ bookSchema.post("findOneAndDelete", async function(doc){
   })
 }) 
 
-bookSchema.method("availableBooks", async function(borrowedCopies : number = 0){
+bookSchema.method("availability", async function(borrowedCopies : number = 0){
   this.copies -= borrowedCopies
   if(this.copies === 0){
     this.available = false

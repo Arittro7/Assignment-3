@@ -6,8 +6,8 @@ export const borrowRoute = express.Router();
 
 borrowRoute.post("/", async (req: Request, res: Response): Promise<any> => {
   try {
-    const { bookId, quantity, dueDate } = req.body;
-    if (!bookId || !quantity || !dueDate) {
+    const { book, quantity, dueDate } = req.body;
+    if (!book || !quantity || !dueDate) {
       return res.status(400).json({
         success: false,
         message: "Missing required fields",
@@ -15,51 +15,34 @@ borrowRoute.post("/", async (req: Request, res: Response): Promise<any> => {
       });
     }
 
-    const update = {
-      $inc: { copies: -quantity },
-    };
-
-    const query = {
-      _id: bookId,
-      copies: { $gte: quantity },
-    };
-
-    const options = { new: true };
-    const updatedBook = await Book.findOneAndUpdate(query, update, options);
-
-    if (!updatedBook) {
-      const book = await Book.findById(bookId);
-      if (!book) {
-        return res.status(404).json({
-          success: false,
-          message: "Book not found",
-          error: "Book may not exists or Invalid book id",
-        });
-      } else {
-        return res.status(400).json({
-          success: false,
-          message: "Not enough copies available",
-          error: `Only ${book.copies} are left`,
-        });
-      }
+    const isEnoughCopies = await Book.findOne({
+      _id: book,
+      copies: {$gte: Number(quantity)}
+    })
+    
+    if(!isEnoughCopies){
+      return res.status(200).json({
+        success: false,
+        message: "No more copy available"
+      })
     }
 
-    if (updatedBook.copies === 0){
-      updatedBook.available = false
-      await updatedBook.save()
-    }
+    const newBorrow = new Borrow({
+      book, quantity, dueDate
+    })
 
-    const borrow = await Borrow.create({
-      book: updatedBook._id,
-      quantity,
-      dueDate,
-    });
+    await newBorrow.save()
+
+    if(isEnoughCopies && isEnoughCopies.copies - Number(quantity) === 0) {
+      isEnoughCopies.availability(Number(quantity))
+    }
 
     res.status(201).json({
       success: true,
       message: "Book borrowed successfully",
-      data: borrow,
-    });
+      data: newBorrow
+    })
+
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -104,5 +87,7 @@ borrowRoute.get("/", async (req: Request, res: Response): Promise<any> => {
   return res.status(200).json({
     success: true,
     message: "Borrowed books summary retrieved successfully",
+    date: summary
+
   });
 });
