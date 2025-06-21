@@ -17,9 +17,9 @@ async function main(){
     })
   } catch (error) {
     console.log({
-      status: 500,
-      success:false,
       message: "Mongodb Connection failed",
+      success:false,
+      error
 
     });
   }
