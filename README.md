@@ -2,7 +2,7 @@
 ### A Library Management System using Express, TypeScript, and MongoDB (via Mongoose).
 
 # 🧺Features
-+ **CURD** CURD functionality for ***Book Management***.
++ **CURD** functionality for ***Book Management***.
 +  **Filtering and Sorting**
 +  **Borrow System**
 +  **Aggregation Summary**
@@ -138,4 +138,10 @@ GET /api/borrow
 
 
 # :globe_with_meridians: Live Demo
-[Live Link](https://assignment-3-eta-ten.vercel.app/)
+## [Live Link](https://assignment-3-eta-ten.vercel.app/)
+
+# :roller_coaster: Tech Stuck
+- TypeScript
+- Express.js
+- Node.js
+- Mongoose
