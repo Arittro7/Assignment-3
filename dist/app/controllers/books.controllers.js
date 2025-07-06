@@ -17,17 +17,22 @@ const express_1 = __importDefault(require("express"));
 const book_model_1 = require("../models/book.model");
 exports.booksRoute = express_1.default.Router();
 // create book
-exports.booksRoute.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const body = req.body;
-    const book = yield book_model_1.Book.create(body);
-    res.status(201).json({
-        success: true,
-        message: "Book created successfully",
-        data: book,
-    });
+exports.booksRoute.post("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const body = req.body;
+        const book = yield book_model_1.Book.create(body);
+        res.status(201).json({
+            success: true,
+            message: "Book created successfully",
+            data: book,
+        });
+    }
+    catch (error) {
+        next(error);
+    }
 }));
 // get all book
-exports.booksRoute.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.booksRoute.get("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { filter, sort, limit = 10 } = req.query;
         const query = {};
@@ -48,10 +53,11 @@ exports.booksRoute.get("/", (req, res) => __awaiter(void 0, void 0, void 0, func
             success: false,
             message: "Failed to get books data",
         });
+        next(error);
     }
 }));
 // get a book by id
-exports.booksRoute.get("/:bookId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.booksRoute.get("/:bookId", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const seeking = req.params.bookId;
         const book = yield book_model_1.Book.findById(seeking);
@@ -67,10 +73,11 @@ exports.booksRoute.get("/:bookId", (req, res) => __awaiter(void 0, void 0, void 
             message: "Failed to retrieved your required book",
             error,
         });
+        next(error);
     }
 }));
 // update a book
-exports.booksRoute.patch("/:bookId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.booksRoute.patch("/:bookId", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const targetBook = req.params.bookId;
         const updateBook = req.body;
@@ -89,10 +96,11 @@ exports.booksRoute.patch("/:bookId", (req, res) => __awaiter(void 0, void 0, voi
             message: "Failed to retrieved your required book",
             error,
         });
+        next(error);
     }
 }));
 // deleting a book
-exports.booksRoute.delete("/:bookId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.booksRoute.delete("/:bookId", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const deleteBook = req.params.bookId;
         yield book_model_1.Book.findByIdAndDelete(deleteBook);
@@ -106,5 +114,6 @@ exports.booksRoute.delete("/:bookId", (req, res) => __awaiter(void 0, void 0, vo
             success: false,
             message: "Failed to delete",
         });
+        next(error);
     }
 }));

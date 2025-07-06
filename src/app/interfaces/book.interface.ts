@@ -9,5 +9,6 @@ export interface IBook extends availability{
   isbn: string,
   description : string,
   copies: number,
-  available : boolean 
+  available : boolean,
+  image:string  //modify for A4
 }

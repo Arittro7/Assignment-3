@@ -15,6 +15,7 @@ const borrow_model_1 = require("./borrow.model");
 const bookSchema = new mongoose_1.Schema({
     title: { type: String, required: true, trim: true },
     author: { type: String, required: true, trim: true },
+    image: { type: String, required: true }, //modify for A4
     genre: {
         type: String,
         required: true,

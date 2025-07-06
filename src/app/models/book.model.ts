@@ -7,6 +7,7 @@ import { Borrow } from "./borrow.model";
 const bookSchema = new Schema<IBook>({
   title: {type: String, required: true, trim:true},
   author: {type: String, required: true, trim:true},
+  image: { type: String, required:true}, //modify for A4
   genre: {
     type: String,
     required: true,

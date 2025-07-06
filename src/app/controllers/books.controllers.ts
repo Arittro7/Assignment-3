@@ -1,21 +1,28 @@
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import { Book } from "../models/book.model";
 
 export const booksRoute = express.Router();
 
 // create book
-booksRoute.post("/", async (req: Request, res: Response) => {
-  const body = req.body;
-  const book = await Book.create(body);
-  res.status(201).json({
-    success: true,
-    message: "Book created successfully",
-    data: book,
-  });
-});
+booksRoute.post(
+  "/",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const body = req.body;
+      const book = await Book.create(body);
+      res.status(201).json({
+        success: true,
+        message: "Book created successfully",
+        data: book,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 // get all book
-booksRoute.get("/", async (req: Request, res: Response) => {
+booksRoute.get("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { filter, sort, limit = 10 } = req.query;
 
@@ -33,15 +40,12 @@ booksRoute.get("/", async (req: Request, res: Response) => {
       data: books,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to get books data",
-    });
+    next(error)
   }
 });
 
 // get a book by id
-booksRoute.get("/:bookId", async (req: Request, res: Response) => {
+booksRoute.get("/:bookId", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const seeking = req.params.bookId;
     const book = await Book.findById(seeking);
@@ -51,16 +55,12 @@ booksRoute.get("/:bookId", async (req: Request, res: Response) => {
       data: book,
     });
   } catch (error) {
-    res.status(404).json({
-      success: false,
-      message: "Failed to retrieved your required book",
-      error,
-    });
+    next(error)
   }
 });
 
 // update a book
-booksRoute.patch("/:bookId", async (req: Request, res: Response) => {
+booksRoute.patch("/:bookId", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const targetBook = req.params.bookId;
     const updateBook = req.body;
@@ -73,16 +73,13 @@ booksRoute.patch("/:bookId", async (req: Request, res: Response) => {
       data: book,
     });
   } catch (error) {
-    res.status(404).json({
-      success: false,
-      message: "Failed to retrieved your required book",
-      error,
-    });
+    
+    next(error)
   }
 });
 
 // deleting a book
-booksRoute.delete("/:bookId", async (req: Request, res: Response) => {
+booksRoute.delete("/:bookId", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const deleteBook = req.params.bookId;
     await Book.findByIdAndDelete(deleteBook);
@@ -92,9 +89,7 @@ booksRoute.delete("/:bookId", async (req: Request, res: Response) => {
       message: "Book deleted successfully",
     });
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: "Failed to delete",
-    })
+    
+    next(error)
   }
 });
